@@ -59,7 +59,7 @@ def index_points(points, idx):
     new_points = points[batch_indices, idx, :]
     return new_points
 
-
+# Sample points using FPS, be sure to return the index of points instead of creating a new tensor
 def farthest_point_sample(xyz, npoint):
     """
     Input:
@@ -83,14 +83,15 @@ def farthest_point_sample(xyz, npoint):
         farthest = torch.max(distance, -1)[1]
     return centroids
 
-
+# Given radius, group points inside the ball of centroids
+# Return a list of index list
 def query_ball_point(radius, nsample, xyz, new_xyz):
     """
     Input:
         radius: local region radius
         nsample: max sample number in local region
         xyz: all points, [B, N, C]
-        new_xyz: query points, [B, S, C]
+        new_xyz: query points, [B, S, C] # Centroids
     Return:
         group_idx: grouped points index, [B, S, nsample]
     """
@@ -113,11 +114,11 @@ def sample_and_group(npoint, radius, nsample, xyz, points, returnfps=False):
         npoint:
         radius:
         nsample:
-        xyz: input points position data, [B, N, C]
-        points: input points data, [B, N, D]
+        xyz: input points position data, [B, N, C] # Coordinates
+        points: input points data, [B, N, D] # Feature
     Return:
-        new_xyz: sampled points position data, [B, 1, C]
-        new_points: sampled points data, [B, 1, N, C+D]
+        new_xyz: sampled points position data, [B, 1, C] # Coordinates
+        new_points: sampled points data, [B, 1, N, C+D] # Feature
     """
     B, N, C = xyz.shape
     S = npoint
